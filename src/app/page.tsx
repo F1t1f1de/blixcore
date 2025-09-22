@@ -111,7 +111,7 @@ export default function Home() {
             <div className="mt-12 lg:mt-0">
               <div className="bg-white rounded-xl shadow-xl p-8">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Start Your Free Trial</h3>
-                <p className="text-gray-600 mb-6">Join 500+ fitness businesses growing with Blixcore</p>
+                <p className="text-gray-600 mb-6">Get started with lead generation for your fitness business</p>
                 {submitted ? (
                   <div className="text-center py-8">
                     <div className="w-16 h-16 bg-[#00e0ff]/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -318,39 +318,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Social Proof Section */}
-      <section className="py-20 bg-[#001f3f]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-white mb-8">
-              Trusted by Australian Fitness Professionals
-            </h2>
-            <div className="grid md:grid-cols-3 gap-8 text-white">
-              <div>
-                <div className="text-4xl font-bold mb-2">87%</div>
-                <div>Increase in Lead Quality</div>
-              </div>
-              <div>
-                <div className="text-4xl font-bold mb-2">3.2x</div>
-                <div>More Conversions</div>
-              </div>
-              <div>
-                <div className="text-4xl font-bold mb-2">500+</div>
-                <div>Active Fitness Businesses</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <Dumbbell className="h-6 w-6 text-[#00e0ff]/70" />
-                <h3 className="text-xl font-bold">Blixcore</h3>
+              <div className="mb-4">
+                <img src="/blixcore-logo.svg" alt="Blixcore" className="h-8" />
               </div>
               <p className="text-gray-400 mb-4">The lead generation platform built specifically for Australian fitness businesses.</p>
               <p className="text-sm text-gray-500">🇦🇺 Proudly Australian-owned</p>
@@ -361,28 +336,21 @@ export default function Home() {
               <div className="space-y-2 text-gray-400">
                 <Link href="#features" className="block hover:text-white">Features</Link>
                 <Link href="#industries" className="block hover:text-white">Industries</Link>
-                <Link href="/integrations" className="block hover:text-white">Integrations</Link>
-                <Link href="/pricing" className="block hover:text-white">Pricing</Link>
+                <span className="block text-gray-500">More Coming Soon</span>
               </div>
             </div>
             
             <div>
               <h4 className="font-semibold mb-4">Resources</h4>
               <div className="space-y-2 text-gray-400">
-                <Link href="/blog" className="block hover:text-white">Fitness Marketing Blog</Link>
-                <Link href="/case-studies" className="block hover:text-white">Success Stories</Link>
-                <Link href="/help" className="block hover:text-white">Help Center</Link>
-                <Link href="/api-docs" className="block hover:text-white">API Documentation</Link>
+                <span className="block text-gray-500">Coming Soon</span>
               </div>
             </div>
             
             <div>
               <h4 className="font-semibold mb-4">Company</h4>
               <div className="space-y-2 text-gray-400">
-                <Link href="/about" className="block hover:text-white">About Us</Link>
-                <Link href="/contact" className="block hover:text-white">Contact</Link>
-                <Link href="/privacy" className="block hover:text-white">Privacy Policy</Link>
-                <Link href="/terms" className="block hover:text-white">Terms of Service</Link>
+                <span className="block text-gray-500">Coming Soon</span>
               </div>
             </div>
           </div>
