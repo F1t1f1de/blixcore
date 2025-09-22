@@ -50,7 +50,7 @@ export default function Login() {
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <Link href="/" className="flex justify-center">
-          <h1 className="text-3xl font-bold text-indigo-600">BlixCore</h1>
+          <img src="/blixcore-logo.svg" alt="Blixcore" className="h-12" />
         </Link>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
           Sign in to your account
@@ -75,7 +75,7 @@ export default function Login() {
                   required
                   value={credentials.username}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-[#00e0ff] focus:border-[#00e0ff] sm:text-sm"
                   placeholder="Enter your username"
                 />
               </div>
@@ -93,7 +93,7 @@ export default function Login() {
                   required
                   value={credentials.password}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-[#00e0ff] focus:border-[#00e0ff] sm:text-sm"
                   placeholder="Enter your password"
                 />
               </div>
@@ -115,7 +115,7 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-[#001f3f] font-semibold bg-[#00e0ff] hover:bg-[#00e0ff]/90 text-[#001f3f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00e0ff] disabled:opacity-50"
               >
                 {isLoading ? 'Signing in...' : 'Sign in'}
               </button>

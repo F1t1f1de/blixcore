@@ -102,7 +102,7 @@ export default function Dashboard() {
       case 'new': return 'bg-blue-100 text-blue-800';
       case 'contacted': return 'bg-yellow-100 text-yellow-800';
       case 'qualified': return 'bg-purple-100 text-purple-800';
-      case 'converted': return 'bg-green-100 text-green-800';
+      case 'converted': return 'bg-[#00e0ff]/10 text-[#001f3f]';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -111,7 +111,7 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#00e0ff]"></div>
           <p className="mt-4 text-gray-600">Loading dashboard...</p>
         </div>
       </div>
@@ -125,12 +125,12 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
-              <Link href="/" className="text-2xl font-bold text-indigo-600">BlixCore</Link>
+              <Link href="/" className="text-2xl font-bold text-[#00e0ff]">BlixCore</Link>
               <span className="ml-4 text-gray-500">/</span>
               <span className="ml-4 text-gray-900">Dashboard</span>
             </div>
             <div className="flex items-center space-x-4">
-              <Link href="/" className="text-indigo-600 hover:text-indigo-800">
+              <Link href="/" className="text-[#00e0ff] hover:text-[#00e0ff]/80">
                 ← Back to Home
               </Link>
               <button 
@@ -165,7 +165,7 @@ export default function Dashboard() {
           </div>
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-sm font-medium text-gray-500">Converted</h3>
-            <p className="text-3xl font-bold text-green-600">{stats.converted}</p>
+            <p className="text-3xl font-bold text-[#00e0ff]">{stats.converted}</p>
           </div>
         </div>
 
@@ -177,7 +177,7 @@ export default function Dashboard() {
               <button
                 onClick={() => setFilter('all')}
                 className={`px-4 py-2 rounded-md text-sm font-medium ${
-                  filter === 'all' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700'
+                  filter === 'all' ? 'bg-[#00e0ff]/10 text-[#001f3f]' : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
                 All ({stats.total})
@@ -209,7 +209,7 @@ export default function Dashboard() {
               <button
                 onClick={() => setFilter('converted')}
                 className={`px-4 py-2 rounded-md text-sm font-medium ${
-                  filter === 'converted' ? 'bg-green-100 text-green-700' : 'text-gray-500 hover:text-gray-700'
+                  filter === 'converted' ? 'bg-[#00e0ff]/10 text-[#001f3f]' : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
                 Converted ({stats.converted})
@@ -264,7 +264,7 @@ export default function Dashboard() {
                       <select
                         value={lead.status}
                         onChange={(e) => updateLeadStatus(lead.id, e.target.value as Lead['status'])}
-                        className="rounded border-gray-300 text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                        className="rounded border-gray-300 text-sm focus:ring-[#00e0ff] focus:border-[#00e0ff]"
                       >
                         <option value="new">New</option>
                         <option value="contacted">Contacted</option>

@@ -53,20 +53,19 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-white to-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
-            <div className="flex items-center space-x-2">
-              <Dumbbell className="h-8 w-8 text-emerald-600" />
-              <h1 className="text-2xl font-bold text-emerald-600">Blixcore</h1>
+            <div className="flex items-center space-x-3">
+              <img src="/blixcore-logo.svg" alt="Blixcore" className="h-10" />
             </div>
             <nav className="hidden md:flex space-x-8">
-              <Link href="#features" className="text-gray-600 hover:text-emerald-600">Features</Link>
-              <Link href="#pricing" className="text-gray-600 hover:text-emerald-600">Pricing</Link>
-              <Link href="#industries" className="text-gray-600 hover:text-emerald-600">Industries</Link>
-              <Link href="/login" className="bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700">Login</Link>
+              <Link href="#features" className="text-gray-600 hover:text-[#00e0ff]">Features</Link>
+              <Link href="#pricing" className="text-gray-600 hover:text-[#00e0ff]">Pricing</Link>
+              <Link href="#industries" className="text-gray-600 hover:text-[#00e0ff]">Industries</Link>
+              <Link href="/login" className="bg-[#00e0ff] text-[#001f3f] px-4 py-2 rounded-md hover:bg-[#00e0ff]/90 font-semibold">Login</Link>
             </nav>
           </div>
         </div>
@@ -78,21 +77,21 @@ export default function Home() {
           <div className="lg:grid lg:grid-cols-2 lg:gap-8 items-center">
             <div>
               <div className="mb-4">
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-emerald-100 text-emerald-800">
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#00e0ff]/10 text-[#001f3f]">
                   🇦🇺 Built for Australian Fitness Businesses
                 </span>
               </div>
               <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-6">
-                Generate More <span className="text-emerald-600">Fitness Clients</span> with AI-Powered Leads
+                Generate More <span className="text-[#00e0ff]">Fitness Clients</span> with AI-Powered Leads
               </h1>
               <p className="text-xl text-gray-600 mb-8">
                 Blixcore helps personal trainers, gyms, and fitness studios in Australia capture, score, and convert more leads with industry-specific intelligence and automation.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                <a href="#contact" className="bg-emerald-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-emerald-700 text-center">
+                <a href="#contact" className="bg-[#00e0ff] text-[#001f3f] px-8 py-3 rounded-lg text-lg font-semibold hover:bg-[#00e0ff]/90 text-center">
                   Start Free Trial
                 </a>
-                <a href="#features" className="border border-emerald-600 text-emerald-600 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-emerald-50 text-center">
+                <a href="#features" className="border border-[#00e0ff] text-[#00e0ff] px-8 py-3 rounded-lg text-lg font-semibold hover:bg-[#00e0ff]/5 text-center">
                   See How It Works
                 </a>
               </div>
@@ -115,8 +114,8 @@ export default function Home() {
                 <p className="text-gray-600 mb-6">Join 500+ fitness businesses growing with Blixcore</p>
                 {submitted ? (
                   <div className="text-center py-8">
-                    <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <svg className="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-16 h-16 bg-[#00e0ff]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-8 h-8 text-[#00e0ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
                     </div>
@@ -133,7 +132,7 @@ export default function Home() {
                         value={formData.name}
                         onChange={handleChange}
                         required
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00e0ff] focus:border-transparent"
                       />
                     </div>
                     <div>
@@ -144,7 +143,7 @@ export default function Home() {
                         value={formData.email}
                         onChange={handleChange}
                         required
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00e0ff] focus:border-transparent"
                       />
                     </div>
                     <div>
@@ -155,7 +154,7 @@ export default function Home() {
                         value={formData.business_name}
                         onChange={handleChange}
                         required
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00e0ff] focus:border-transparent"
                       />
                     </div>
                     <div>
@@ -164,7 +163,7 @@ export default function Home() {
                         value={formData.business_type}
                         onChange={handleChange}
                         required
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00e0ff] focus:border-transparent"
                       >
                         <option value="">Select Business Type</option>
                         <option value="personal_trainer">Personal Trainer</option>
@@ -182,7 +181,7 @@ export default function Home() {
                         placeholder="Phone Number (Optional)"
                         value={formData.phone}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00e0ff] focus:border-transparent"
                       />
                     </div>
                     <div>
@@ -192,13 +191,13 @@ export default function Home() {
                         placeholder="Business Location (e.g., Sydney, Melbourne)"
                         value={formData.location}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00e0ff] focus:border-transparent"
                       />
                     </div>
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full bg-emerald-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full bg-[#00e0ff] text-[#001f3f] py-3 px-4 rounded-lg font-semibold hover:bg-[#00e0ff]/90 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isSubmitting ? 'Setting Up Your Account...' : 'Start Free 14-Day Trial'}
                     </button>
@@ -224,48 +223,48 @@ export default function Home() {
           
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="w-16 h-16 bg-emerald-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Target className="w-8 h-8 text-emerald-600" />
+              <div className="w-16 h-16 bg-[#00e0ff]/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <Target className="w-8 h-8 text-[#00e0ff]" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Smart Lead Scoring</h3>
               <p className="text-gray-600">AI-powered scoring considers fitness goals, activity level, and engagement to prioritize your hottest prospects.</p>
             </div>
             
             <div className="text-center">
-              <div className="w-16 h-16 bg-emerald-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Users className="w-8 h-8 text-emerald-600" />
+              <div className="w-16 h-16 bg-[#00e0ff]/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <Users className="w-8 h-8 text-[#00e0ff]" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Fitness-First Forms</h3>
               <p className="text-gray-600">Capture detailed fitness profiles including goals, experience level, and health conditions for better client matching.</p>
             </div>
             
             <div className="text-center">
-              <div className="w-16 h-16 bg-emerald-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <TrendingUp className="w-8 h-8 text-emerald-600" />
+              <div className="w-16 h-16 bg-[#00e0ff]/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <TrendingUp className="w-8 h-8 text-[#00e0ff]" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Industry Analytics</h3>
               <p className="text-gray-600">Track seasonal trends, client acquisition costs, and fitness-specific conversion rates to grow your business.</p>
             </div>
             
             <div className="text-center">
-              <div className="w-16 h-16 bg-emerald-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Zap className="w-8 h-8 text-emerald-600" />
+              <div className="w-16 h-16 bg-[#00e0ff]/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <Zap className="w-8 h-8 text-[#00e0ff]" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Fitness App Integrations</h3>
               <p className="text-gray-600">Connect with MyFitnessPal, Strava, and other fitness platforms to enrich lead profiles automatically.</p>
             </div>
             
             <div className="text-center">
-              <div className="w-16 h-16 bg-emerald-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Users className="w-8 h-8 text-emerald-600" />
+              <div className="w-16 h-16 bg-[#00e0ff]/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <Users className="w-8 h-8 text-[#00e0ff]" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Campaign Templates</h3>
               <p className="text-gray-600">Pre-built email sequences for New Year fitness goals, summer prep, and other seasonal fitness campaigns.</p>
             </div>
             
             <div className="text-center">
-              <div className="w-16 h-16 bg-emerald-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Shield className="w-8 h-8 text-emerald-600" />
+              <div className="w-16 h-16 bg-[#00e0ff]/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <Shield className="w-8 h-8 text-[#00e0ff]" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Australian Compliance</h3>
               <p className="text-gray-600">Built with Australian privacy laws and fitness industry regulations in mind, including health data protection.</p>
@@ -285,32 +284,32 @@ export default function Home() {
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="bg-white p-6 rounded-lg shadow-md text-center">
-              <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Dumbbell className="w-6 h-6 text-emerald-600" />
+              <div className="w-12 h-12 bg-[#00e0ff]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Dumbbell className="w-6 h-6 text-[#00e0ff]" />
               </div>
               <h3 className="font-semibold text-gray-900 mb-2">Personal Trainers</h3>
               <p className="text-sm text-gray-600">Build your client base with targeted lead capture and automated follow-up sequences.</p>
             </div>
             
             <div className="bg-white p-6 rounded-lg shadow-md text-center">
-              <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Users className="w-6 h-6 text-emerald-600" />
+              <div className="w-12 h-12 bg-[#00e0ff]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Users className="w-6 h-6 text-[#00e0ff]" />
               </div>
               <h3 className="font-semibold text-gray-900 mb-2">Gyms & Studios</h3>
               <p className="text-sm text-gray-600">Increase membership conversions with smart lead scoring and campaign management.</p>
             </div>
             
             <div className="bg-white p-6 rounded-lg shadow-md text-center">
-              <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Target className="w-6 h-6 text-emerald-600" />
+              <div className="w-12 h-12 bg-[#00e0ff]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Target className="w-6 h-6 text-[#00e0ff]" />
               </div>
               <h3 className="font-semibold text-gray-900 mb-2">Physiotherapy</h3>
               <p className="text-sm text-gray-600">Capture health-conscious leads and manage referrals with specialized intake forms.</p>
             </div>
             
             <div className="bg-white p-6 rounded-lg shadow-md text-center">
-              <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Zap className="w-6 h-6 text-emerald-600" />
+              <div className="w-12 h-12 bg-[#00e0ff]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Zap className="w-6 h-6 text-[#00e0ff]" />
               </div>
               <h3 className="font-semibold text-gray-900 mb-2">Wellness Coaches</h3>
               <p className="text-sm text-gray-600">Connect with clients seeking holistic health solutions and nutrition guidance.</p>
@@ -320,7 +319,7 @@ export default function Home() {
       </section>
 
       {/* Social Proof Section */}
-      <section className="py-20 bg-emerald-600">
+      <section className="py-20 bg-[#001f3f]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-white mb-8">
@@ -350,7 +349,7 @@ export default function Home() {
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <Dumbbell className="h-6 w-6 text-emerald-400" />
+                <Dumbbell className="h-6 w-6 text-[#00e0ff]/70" />
                 <h3 className="text-xl font-bold">Blixcore</h3>
               </div>
               <p className="text-gray-400 mb-4">The lead generation platform built specifically for Australian fitness businesses.</p>
