@@ -1,29 +1,41 @@
 <svg width="600" height="120" viewBox="0 0 600 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Icon section based on the provided image -->
-  <g transform="translate(20, 20)">
-    <!-- Main device shape -->
-    <path d="M10 15 L50 8 L55 12 L58 45 L52 55 L45 58 L15 52 L8 45 L10 15 Z" fill="#00e0ff" stroke="#001f3f" stroke-width="2"/>
+  <!-- Recreating the exact logo from the provided image -->
+  <g transform="translate(10, 10)">
+    <!-- Main device/card reader shape - isometric perspective -->
+    <path d="M15 25 L55 18 L70 25 L72 35 L70 65 L65 75 L55 78 L25 75 L15 65 L13 35 Z" fill="#124c66" stroke="#001f3f" stroke-width="1.5"/>
+    <path d="M15 25 L55 18 L70 25 L65 22 L25 22 Z" fill="#00e0ff" opacity="0.8"/>
     
-    <!-- Lightning bolt -->
-    <path d="M25 20 L35 20 L30 35 L40 35 L25 50 L30 40 L20 40 Z" fill="#ffffff"/>
+    <!-- Screen/display area -->
+    <rect x="20" y="30" width="35" height="25" rx="2" fill="#001f3f"/>
+    <rect x="22" y="32" width="31" height="21" rx="1" fill="#00e0ff" opacity="0.2"/>
     
-    <!-- Tech details -->
-    <rect x="45" y="25" width="8" height="2" fill="#00e0ff"/>
-    <rect x="45" y="30" width="6" height="2" fill="#00e0ff"/>
-    <rect x="45" y="35" width="4" height="2" fill="#00e0ff"/>
+    <!-- Lightning bolt icon -->
+    <path d="M30 35 L38 35 L34 45 L42 45 L30 55 L34 48 L26 48 Z" fill="#00e0ff"/>
     
-    <!-- Floating elements -->
-    <circle cx="15" cy="12" r="2" fill="#00e0ff"/>
-    <circle cx="58" cy="18" r="1.5" fill="#00e0ff"/>
-    <circle cx="12" cy="58" r="1.5" fill="#00e0ff"/>
-    <circle cx="55" cy="62" r="2" fill="#00e0ff"/>
+    <!-- Card slot -->
+    <rect x="25" y="58" width="25" height="3" rx="1" fill="#001f3f"/>
     
-    <!-- Small squares -->
-    <rect x="8" y="25" width="3" height="3" fill="#00e0ff"/>
-    <rect x="52" y="48" width="3" height="3" fill="#00e0ff"/>
+    <!-- Side details -->
+    <rect x="58" y="28" width="8" height="2" rx="1" fill="#00e0ff"/>
+    <rect x="58" y="32" width="6" height="2" rx="1" fill="#00e0ff"/>
+    <rect x="58" y="36" width="4" height="2" rx="1" fill="#00e0ff"/>
+    
+    <!-- Floating tech elements around the device -->
+    <circle cx="5" cy="15" r="2" fill="#00e0ff"/>
+    <circle cx="75" cy="20" r="1.5" fill="#00e0ff"/>
+    <circle cx="8" cy="75" r="1.5" fill="#00e0ff"/>
+    <circle cx="78" cy="70" r="2" fill="#00e0ff"/>
+    <circle cx="12" cy="45" r="1" fill="#00e0ff"/>
+    <circle cx="80" cy="45" r="1" fill="#00e0ff"/>
+    
+    <!-- Small square elements -->
+    <rect x="2" y="35" width="3" height="3" rx="0.5" fill="#00e0ff"/>
+    <rect x="75" y="55" width="3" height="3" rx="0.5" fill="#00e0ff"/>
+    <rect x="5" y="60" width="2" height="2" rx="0.5" fill="#00e0ff"/>
+    <rect x="78" y="30" width="2" height="2" rx="0.5" fill="#00e0ff"/>
   </g>
   
-  <!-- BLIXCORE Text exactly as shown -->
-  <text x="120" y="75" font-family="Arial, sans-serif" font-size="72" font-weight="900" fill="#00e0ff">BLIX</text>
-  <text x="320" y="75" font-family="Arial, sans-serif" font-size="72" font-weight="900" fill="#001f3f">CORE</text>
+  <!-- BLIXCORE Text matching the exact typography -->
+  <text x="120" y="75" font-family="Arial, Helvetica, sans-serif" font-size="68" font-weight="900" letter-spacing="-0.02em" fill="#00e0ff">BLIX</text>
+  <text x="310" y="75" font-family="Arial, Helvetica, sans-serif" font-size="68" font-weight="900" letter-spacing="-0.02em" fill="#001f3f">CORE</text>
 </svg>
