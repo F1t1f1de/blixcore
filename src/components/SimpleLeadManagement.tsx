@@ -184,7 +184,7 @@ const mockLeads: FitnessLead[] = [
   }
 ];
 
-export default function LeadManagement() {
+export default function SimpleLeadManagement() {
   const [leads] = useState<FitnessLead[]>(mockLeads);
   const [filteredLeads, setFilteredLeads] = useState<FitnessLead[]>(mockLeads);
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
