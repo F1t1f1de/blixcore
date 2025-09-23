@@ -53,13 +53,13 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white to-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-blue-50">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center space-x-3">
-              <img src="/blixcore-logo.png" alt="Blixcore" className="h-12" />
+              <img src="/blixcore-logo.png" alt="Blixcore" className="h-10" />
             </div>
             <nav className="hidden md:flex space-x-8">
               <Link href="#features" className="text-gray-600 hover:text-[#00e0ff]">Features</Link>
@@ -81,17 +81,17 @@ export default function Home() {
                   🇦🇺 Built for Australian Fitness Businesses
                 </span>
               </div>
-              <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-6">
-                Generate More <span className="text-[#00e0ff]">Fitness Clients</span> with AI-Powered Leads
+              <h1 className="text-5xl lg:text-7xl font-extrabold text-gray-900 mb-6 tracking-tight">
+                Generate More <span className="text-[#00e0ff] bg-gradient-to-r from-[#00e0ff] to-[#001f3f] bg-clip-text text-transparent">Fitness Clients</span> with AI-Powered Leads
               </h1>
-              <p className="text-xl text-gray-600 mb-8">
+              <p className="text-xl lg:text-2xl text-gray-600 mb-8 font-light leading-relaxed">
                 Blixcore helps personal trainers, gyms, and fitness studios in Australia capture, score, and convert more leads with industry-specific intelligence and automation.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                <a href="#contact" className="bg-[#00e0ff] text-[#001f3f] px-8 py-3 rounded-lg text-lg font-semibold hover:bg-[#00e0ff]/90 text-center">
+                <a href="#contact" className="bg-gradient-to-r from-[#00e0ff] to-[#00e0ff]/80 text-[#001f3f] px-10 py-4 rounded-xl text-xl font-bold hover:shadow-xl hover:scale-105 transition-all duration-300 text-center inline-block">
                   Start Free Trial
                 </a>
-                <a href="#features" className="border border-[#00e0ff] text-[#00e0ff] px-8 py-3 rounded-lg text-lg font-semibold hover:bg-[#00e0ff]/5 text-center">
+                <a href="#features" className="border-2 border-[#00e0ff] text-[#00e0ff] px-10 py-4 rounded-xl text-xl font-bold hover:bg-[#00e0ff]/10 hover:scale-105 transition-all duration-300 text-center inline-block">
                   See How It Works
                 </a>
               </div>
@@ -109,7 +109,7 @@ export default function Home() {
             
             {/* Lead Capture Form */}
             <div className="mt-12 lg:mt-0">
-              <div className="bg-white rounded-xl shadow-xl p-8">
+              <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-100 p-8 hover:shadow-3xl transition-all duration-300">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Start Your Free Trial</h3>
                 <p className="text-gray-600 mb-6">Get started with lead generation for your fitness business</p>
                 {submitted ? (
@@ -210,24 +210,24 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 bg-white">
+      <section id="features" className="py-24 bg-gradient-to-b from-white to-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              Built Specifically for Fitness Businesses
+            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6 tracking-tight">
+              Built Specifically for <span className="text-[#00e0ff]">Fitness</span> Businesses
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl lg:text-2xl text-gray-600 max-w-4xl mx-auto font-light leading-relaxed">
               Unlike generic CRM tools, Blixcore understands the fitness industry and helps you convert prospects into loyal clients.
             </p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-[#00e0ff]/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Target className="w-8 h-8 text-[#00e0ff]" />
+          <div className="grid md:grid-cols-3 gap-12">
+            <div className="text-center group hover:scale-105 transition-transform duration-300">
+              <div className="w-20 h-20 bg-gradient-to-br from-[#00e0ff]/20 to-[#001f3f]/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:shadow-lg transition-all duration-300">
+                <Target className="w-10 h-10 text-[#00e0ff]" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Smart Lead Scoring</h3>
-              <p className="text-gray-600">AI-powered scoring considers fitness goals, activity level, and engagement to prioritize your hottest prospects.</p>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Smart Lead Scoring</h3>
+              <p className="text-lg text-gray-600 leading-relaxed">AI-powered scoring considers fitness goals, activity level, and engagement to prioritize your hottest prospects.</p>
             </div>
             
             <div className="text-center">
@@ -325,7 +325,9 @@ export default function Home() {
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="mb-4">
-                <img src="/blixcore-logo.png" alt="Blixcore" className="h-8 bg-white p-2 rounded" />
+                <div className="inline-block bg-white p-3 rounded-lg">
+                  <img src="/blixcore-logo.png" alt="Blixcore" className="h-8" />
+                </div>
               </div>
               <p className="text-gray-400 mb-4">The lead generation platform built specifically for Australian fitness businesses.</p>
               <p className="text-sm text-gray-500">🇦🇺 Proudly Australian-owned</p>
