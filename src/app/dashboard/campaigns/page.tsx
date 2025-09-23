@@ -4,9 +4,8 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getAuthToken } from '@/lib/auth';
 import DashboardLayout from '@/components/DashboardLayout';
-import DashboardOverview from '@/components/DashboardOverview';
 
-export default function Dashboard() {
+export default function CampaignsPage() {
   const router = useRouter();
 
   useEffect(() => {
@@ -19,7 +18,12 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout>
-      <DashboardOverview />
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900 mb-6">Email & SMS Campaigns</h1>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+          <p className="text-gray-600">Campaign management system coming soon...</p>
+        </div>
+      </div>
     </DashboardLayout>
   );
 }
