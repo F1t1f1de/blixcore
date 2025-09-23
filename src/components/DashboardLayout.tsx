@@ -6,10 +6,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import {
   BarChart3,
   Users,
-  Target,
-  TrendingUp,
-  Mail,
-  Plug,
   Settings,
   Bell,
   Search,
@@ -27,13 +23,9 @@ interface DashboardLayoutProps {
 }
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: BarChart3, badge: null },
-  { name: 'Leads', href: '/dashboard/leads', icon: Users, badge: '12' },
-  { name: 'Scoring', href: '/dashboard/scoring', icon: Target, badge: null },
-  { name: 'Analytics', href: '/dashboard/analytics', icon: TrendingUp, badge: null },
-  { name: 'Campaigns', href: '/dashboard/campaigns', icon: Mail, badge: '2' },
-  { name: 'Integrations', href: '/dashboard/integrations', icon: Plug, badge: null },
-  { name: 'Settings', href: '/dashboard/settings', icon: Settings, badge: null },
+  { name: 'Dashboard', href: '/dashboard', icon: BarChart3 },
+  { name: 'Leads', href: '/dashboard/leads', icon: Users },
+  { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ];
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
@@ -60,7 +52,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-xl transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0`}>
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
           <Link href="/dashboard" className="flex items-center">
-            <img src="/blixcore-logo.png" alt="Blixcore" className="h-8" />
+            <div className="flex items-center space-x-2">
+              <Dumbbell className="h-8 w-8 text-[#00e0ff]" />
+              <span className="text-xl font-bold text-gray-900">BlixCore</span>
+            </div>
           </Link>
           <button
             onClick={() => setSidebarOpen(false)}
@@ -90,29 +85,20 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     }`}
                   />
                   {item.name}
-                  {item.badge && (
-                    <span className="ml-auto inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#00e0ff] text-[#001f3f]">
-                      {item.badge}
-                    </span>
-                  )}
                 </Link>
               );
             })}
           </div>
         </nav>
 
-        {/* Fitness Industry Status */}
+        {/* Footer */}
         <div className="absolute bottom-6 left-4 right-4">
           <div className="bg-gradient-to-r from-[#00e0ff]/10 to-[#001f3f]/5 rounded-xl p-4 border border-[#00e0ff]/20">
             <div className="flex items-center mb-2">
-              <Dumbbell className="h-4 w-4 text-[#00e0ff] mr-2" />
-              <span className="text-sm font-medium text-[#001f3f]">Fitness Industry</span>
+              <Activity className="h-4 w-4 text-[#00e0ff] mr-2" />
+              <span className="text-sm font-medium text-[#001f3f]">Fitness CRM</span>
             </div>
-            <p className="text-xs text-gray-600">🇦🇺 Australian Market Focus</p>
-            <div className="flex items-center mt-2">
-              <Activity className="h-3 w-3 text-green-500 mr-1" />
-              <span className="text-xs text-gray-500">Summer Season Active</span>
-            </div>
+            <p className="text-xs text-gray-600">Lead Management System</p>
           </div>
         </div>
       </div>
@@ -137,7 +123,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <input
                     type="text"
-                    placeholder="Search leads, campaigns..."
+                    placeholder="Search leads..."
                     className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#00e0ff]/20 focus:border-[#00e0ff] text-sm"
                   />
                 </div>
@@ -145,12 +131,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
               {/* Right side */}
               <div className="flex items-center space-x-4">
-                {/* Notifications */}
-                <button className="p-2 text-gray-400 hover:text-gray-500 hover:bg-gray-100 rounded-lg relative">
-                  <Bell className="h-5 w-5" />
-                  <span className="absolute top-1 right-1 h-2 w-2 bg-[#00e0ff] rounded-full"></span>
-                </button>
-
                 {/* User menu */}
                 <div className="relative">
                   <button
@@ -161,8 +141,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                       <User className="h-4 w-4 text-white" />
                     </div>
                     <div className="hidden sm:block text-left">
-                      <p className="font-medium text-gray-900">Demo User</p>
-                      <p className="text-xs text-gray-500">Fitness Business Owner</p>
+                      <p className="font-medium text-gray-900">User</p>
+                      <p className="text-xs text-gray-500">Fitness Business</p>
                     </div>
                     <ChevronDown className="h-4 w-4 text-gray-400" />
                   </button>

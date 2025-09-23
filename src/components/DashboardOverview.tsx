@@ -1,166 +1,132 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Users,
   Target,
-  DollarSign,
   Plus,
-  Mail,
-  Calendar,
   Activity,
   Award,
-  Clock,
   ArrowUpRight,
   ArrowDownRight,
-  Download
+  Brain,
+  TrendingUp,
+  Clock
 } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
+import Link from 'next/link';
 
-// Mock data for demo
-const metrics = [
-  {
-    title: 'Total Leads',
-    value: '247',
-    change: '+12%',
-    changeType: 'positive',
-    icon: Users,
-    period: 'This month',
-    trend: [20, 25, 22, 30, 28, 35, 32, 40, 38, 42, 45, 47]
-  },
-  {
-    title: 'Conversion Rate',
-    value: '23.4%',
-    change: '+5.2%',
-    changeType: 'positive',
-    icon: Target,
-    period: 'This month',
-    trend: [15, 18, 16, 22, 20, 25, 23, 28, 26, 30, 28, 32]
-  },
-  {
-    title: 'Monthly Revenue',
-    value: 'AU$12,450',
-    change: '+18%',
-    changeType: 'positive',
-    icon: DollarSign,
-    period: 'This month',
-    trend: [800, 900, 850, 1100, 1000, 1200, 1150, 1300, 1250, 1400, 1350, 1450]
-  },
-  {
-    title: 'Avg. Lead Score',
-    value: '78',
-    change: '-2%',
-    changeType: 'negative',
-    icon: Award,
-    period: 'This month',
-    trend: [82, 80, 85, 78, 79, 76, 78, 75, 77, 78, 76, 78]
+interface Lead {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  location?: string;
+  age?: number;
+  fitness_goals: string[];
+  current_activity_level: string;
+  previous_gym_experience: boolean;
+  budget_range: string;
+  lead_source: string;
+  status: string;
+  created_at: string;
+}
+
+// Simple scoring function
+function calculateLeadScore(lead: Lead): number {
+  let score = 0;
+  
+  // Age scoring (0-25 points)
+  if (lead.age) {
+    if (lead.age >= 25 && lead.age <= 45) score += 25;
+    else if (lead.age >= 18 && lead.age <= 55) score += 20;
+    else score += 15;
+  } else score += 10;
+
+  // Activity level (0-20 points) - sedentary has highest potential
+  switch (lead.current_activity_level) {
+    case 'sedentary': score += 20; break;
+    case 'lightly_active': score += 18; break;
+    case 'moderately_active': score += 15; break;
+    case 'very_active': score += 12; break;
+    case 'extremely_active': score += 10; break;
   }
-];
 
-const recentLeads = [
-  {
-    id: 1,
-    name: 'Sarah Johnson',
-    email: 'sarah@email.com',
-    score: 92,
-    goal: 'Weight Loss',
-    source: 'Website',
-    time: '2 hours ago',
-    status: 'new'
-  },
-  {
-    id: 2,
-    name: 'Mike Chen',
-    email: 'mike.chen@email.com',
-    score: 85,
-    goal: 'Muscle Gain',
-    source: 'Facebook Ad',
-    time: '4 hours ago',
-    status: 'contacted'
-  },
-  {
-    id: 3,
-    name: 'Emma Wilson',
-    email: 'emma.w@email.com',
-    score: 78,
-    goal: 'General Fitness',
-    source: 'Referral',
-    time: '6 hours ago',
-    status: 'qualified'
-  },
-  {
-    id: 4,
-    name: 'David Brown',
-    email: 'david.brown@email.com',
-    score: 88,
-    goal: 'Athletic Performance',
-    source: 'Instagram',
-    time: '1 day ago',
-    status: 'new'
-  },
-  {
-    id: 5,
-    name: 'Lisa Zhang',
-    email: 'lisa.zhang@email.com',
-    score: 72,
-    goal: 'Rehabilitation',
-    source: 'Google Ads',
-    time: '1 day ago',
-    status: 'contacted'
-  }
-];
+  // Experience (0-15 points)
+  if (lead.previous_gym_experience) score += 10;
+  else score += 15;
 
-const scoreDistribution = [
-  { range: '90-100', count: 45, percentage: 18 },
-  { range: '80-89', count: 78, percentage: 32 },
-  { range: '70-79', count: 62, percentage: 25 },
-  { range: '60-69', count: 38, percentage: 15 },
-  { range: '50-59', count: 24, percentage: 10 }
-];
+  // Budget (0-20 points)
+  if (lead.budget_range.includes('200+')) score += 20;
+  else if (lead.budget_range.includes('150') || lead.budget_range.includes('100-200')) score += 15;
+  else if (lead.budget_range.includes('100')) score += 12;
+  else score += 8;
 
-const quickActions = [
-  {
-    title: 'Add New Lead',
-    description: 'Manually add a fitness prospect',
-    icon: Plus,
-    color: 'bg-[#00e0ff]',
-    href: '/dashboard/leads/new'
-  },
-  {
-    title: 'Create Campaign',
-    description: 'Launch email or SMS campaign',
-    icon: Mail,
-    color: 'bg-purple-500',
-    href: '/dashboard/campaigns/new'
-  },
-  {
-    title: 'Schedule Follow-up',
-    description: 'Set reminders for hot leads',
-    icon: Calendar,
-    color: 'bg-green-500',
-    href: '/dashboard/leads?filter=followup'
-  },
-  {
-    title: 'View Analytics',
-    description: 'Detailed performance insights',
-    icon: Activity,
-    color: 'bg-orange-500',
-    href: '/dashboard/analytics'
-  }
-];
+  // Lead source (0-10 points)
+  if (lead.lead_source.toLowerCase().includes('referral')) score += 10;
+  else if (lead.lead_source.toLowerCase().includes('organic') || lead.lead_source.toLowerCase().includes('website')) score += 8;
+  else if (lead.lead_source.toLowerCase().includes('google')) score += 7;
+  else score += 5;
 
-const seasonalInsights = {
-  season: 'Summer Prep Season',
-  trend: 'High Activity',
-  description: 'Peak season for fitness goals in Australia. Expect 40% more leads focused on weight loss and beach body preparation.',
-  tips: [
-    'Create summer-focused campaigns',
-    'Highlight transformation stories',
-    'Offer beach body bootcamps'
-  ]
-};
+  // Goals (0-10 points)
+  if (lead.fitness_goals.length > 0) score += Math.min(lead.fitness_goals.length * 3, 10);
+
+  return Math.min(score, 100);
+}
 
 export default function DashboardOverview() {
-  const [timeRange, setTimeRange] = useState('30d');
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchLeads();
+  }, []);
+
+  const fetchLeads = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('fitness_leads')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setLeads(data || []);
+    } catch (error) {
+      console.error('Error fetching leads:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            {[1,2,3,4].map(i => (
+              <div key={i} className="bg-white rounded-xl p-6 border">
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div className="h-8 bg-gray-200 rounded w-1/2"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Calculate real metrics from actual data
+  const totalLeads = leads.length;
+  const enhancedLeads = leads.map(lead => ({
+    ...lead,
+    aiScore: calculateLeadScore(lead)
+  }));
+
+  const hotLeads = enhancedLeads.filter(l => l.aiScore >= 85).length;
+  const qualifiedLeads = enhancedLeads.filter(l => l.aiScore >= 70).length;
+  const avgScore = totalLeads > 0 ? Math.round(enhancedLeads.reduce((sum, l) => sum + l.aiScore, 0) / totalLeads) : 0;
+  const newLeads = leads.filter(l => l.status === 'new').length;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -173,10 +139,10 @@ export default function DashboardOverview() {
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 90) return 'text-green-600 bg-green-50';
-    if (score >= 80) return 'text-blue-600 bg-blue-50';
-    if (score >= 70) return 'text-yellow-600 bg-yellow-50';
-    return 'text-red-600 bg-red-50';
+    if (score >= 85) return 'text-red-600 bg-red-50';
+    if (score >= 70) return 'text-orange-600 bg-orange-50';
+    if (score >= 50) return 'text-yellow-600 bg-yellow-50';
+    return 'text-blue-600 bg-blue-50';
   };
 
   return (
@@ -184,164 +150,178 @@ export default function DashboardOverview() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Lead Management Dashboard</h1>
           <p className="mt-1 text-sm text-gray-500">
-            Welcome back! Here&apos;s what&apos;s happening with your fitness business.
+            Track and manage your fitness business leads with AI-powered insights
           </p>
         </div>
-        <div className="mt-4 sm:mt-0 flex items-center space-x-3">
-          <select
-            value={timeRange}
-            onChange={(e) => setTimeRange(e.target.value)}
-            className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00e0ff]/20 focus:border-[#00e0ff]"
+        <div className="mt-4 sm:mt-0">
+          <Link
+            href="/dashboard/leads"
+            className="flex items-center px-4 py-2 text-sm font-medium text-white bg-[#00e0ff] rounded-lg hover:bg-[#00e0ff]/90"
           >
-            <option value="7d">Last 7 days</option>
-            <option value="30d">Last 30 days</option>
-            <option value="90d">Last 90 days</option>
-          </select>
-          <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">
-            <Download className="h-4 w-4 mr-2" />
-            Export
-          </button>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Lead
+          </Link>
         </div>
       </div>
 
-      {/* Seasonal Insights */}
-      <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-xl p-6">
-        <div className="flex items-start space-x-4">
-          <div className="p-2 bg-orange-100 rounded-lg">
-            <Activity className="h-6 w-6 text-orange-600" />
-          </div>
-          <div className="flex-1">
-            <div className="flex items-center space-x-2 mb-2">
-              <h3 className="text-lg font-semibold text-gray-900">{seasonalInsights.season}</h3>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                {seasonalInsights.trend}
-              </span>
-            </div>
-            <p className="text-gray-600 mb-3">{seasonalInsights.description}</p>
-            <div className="flex flex-wrap gap-2">
-              {seasonalInsights.tips.map((tip, index) => (
-                <span key={index} className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-white text-gray-700 border border-orange-200">
-                  {tip}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Metrics Cards */}
+      {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {metrics.map((metric) => (
-          <div key={metric.title} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-2 bg-gradient-to-r from-[#00e0ff]/20 to-[#001f3f]/10 rounded-lg">
-                <metric.icon className="h-5 w-5 text-[#00e0ff]" />
-              </div>
-              <div className={`flex items-center text-sm ${metric.changeType === 'positive' ? 'text-green-600' : 'text-red-600'}`}>
-                {metric.changeType === 'positive' ? (
-                  <ArrowUpRight className="h-4 w-4 mr-1" />
-                ) : (
-                  <ArrowDownRight className="h-4 w-4 mr-1" />
-                )}
-                {metric.change}
-              </div>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-2 bg-blue-100 rounded-lg">
+              <Users className="h-5 w-5 text-blue-600" />
             </div>
-            <div className="mb-2">
-              <h3 className="text-2xl font-bold text-gray-900">{metric.value}</h3>
-              <p className="text-sm text-gray-500">{metric.title}</p>
-            </div>
-            <p className="text-xs text-gray-400">{metric.period}</p>
-          </div>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Recent Leads */}
-        <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200">
-          <div className="p-6 border-b border-gray-200">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">Recent Leads</h3>
-              <button className="text-sm text-[#00e0ff] hover:text-[#001f3f] font-medium">
-                View all
-              </button>
+            <div className="flex items-center text-sm text-green-600">
+              <ArrowUpRight className="h-4 w-4 mr-1" />
+              Live Data
             </div>
           </div>
-          <div className="divide-y divide-gray-200">
-            {recentLeads.map((lead) => (
-              <div key={lead.id} className="p-6 hover:bg-gray-50 transition-colors">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <h4 className="font-medium text-gray-900">{lead.name}</h4>
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(lead.status)}`}>
-                        {lead.status}
-                      </span>
-                      <span className={`inline-flex items-center px-2 py-1 rounded-lg text-xs font-bold ${getScoreColor(lead.score)}`}>
-                        {lead.score}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-600">{lead.email}</p>
-                    <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
-                      <span>Goal: {lead.goal}</span>
-                      <span>Source: {lead.source}</span>
-                      <span className="flex items-center">
-                        <Clock className="h-3 w-3 mr-1" />
-                        {lead.time}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="mb-2">
+            <h3 className="text-2xl font-bold text-gray-900">{totalLeads}</h3>
+            <p className="text-sm text-gray-500">Total Leads</p>
           </div>
         </div>
 
-        {/* Lead Score Distribution */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-          <div className="p-6 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900">Lead Score Distribution</h3>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-2 bg-red-100 rounded-lg">
+              <Target className="h-5 w-5 text-red-600" />
+            </div>
+            <div className="flex items-center text-sm text-green-600">
+              <ArrowUpRight className="h-4 w-4 mr-1" />
+              AI Scored
+            </div>
           </div>
-          <div className="p-6">
-            <div className="space-y-4">
-              {scoreDistribution.map((item) => (
-                <div key={item.range} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <span className="text-sm font-medium text-gray-700">{item.range}</span>
-                    <div className="flex-1 bg-gray-200 rounded-full h-2 w-20">
-                      <div
-                        className="bg-gradient-to-r from-[#00e0ff] to-[#001f3f] h-2 rounded-full"
-                        style={{ width: `${item.percentage}%` }}
-                      />
+          <div className="mb-2">
+            <h3 className="text-2xl font-bold text-gray-900">{hotLeads}</h3>
+            <p className="text-sm text-gray-500">Hot Leads (85+)</p>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-2 bg-orange-100 rounded-lg">
+              <Award className="h-5 w-5 text-orange-600" />
+            </div>
+            <div className="flex items-center text-sm text-green-600">
+              <ArrowUpRight className="h-4 w-4 mr-1" />
+              Qualified
+            </div>
+          </div>
+          <div className="mb-2">
+            <h3 className="text-2xl font-bold text-gray-900">{qualifiedLeads}</h3>
+            <p className="text-sm text-gray-500">Qualified (70+)</p>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-2 bg-green-100 rounded-lg">
+              <Brain className="h-5 w-5 text-green-600" />
+            </div>
+            <div className="flex items-center text-sm text-blue-600">
+              <TrendingUp className="h-4 w-4 mr-1" />
+              AI Average
+            </div>
+          </div>
+          <div className="mb-2">
+            <h3 className="text-2xl font-bold text-gray-900">{avgScore}</h3>
+            <p className="text-sm text-gray-500">Avg Score</p>
+          </div>
+        </div>
+      </div>
+
+      {totalLeads === 0 ? (
+        // Empty State
+        <div className="text-center py-12">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12">
+            <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No leads yet</h3>
+            <p className="text-gray-500 mb-6">Get started by adding your first fitness lead</p>
+            <Link
+              href="/dashboard/leads"
+              className="inline-flex items-center px-6 py-3 text-sm font-medium text-white bg-[#00e0ff] rounded-lg hover:bg-[#00e0ff]/90"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Your First Lead
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Recent Leads */}
+          <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900">Recent Leads</h3>
+                <Link 
+                  href="/dashboard/leads"
+                  className="text-sm text-[#00e0ff] hover:text-[#001f3f] font-medium"
+                >
+                  View all
+                </Link>
+              </div>
+            </div>
+            <div className="divide-y divide-gray-200">
+              {enhancedLeads.slice(0, 5).map((lead) => (
+                <div key={lead.id} className="p-6 hover:bg-gray-50 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <h4 className="font-medium text-gray-900">{lead.name}</h4>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(lead.status)}`}>
+                          {lead.status}
+                        </span>
+                        <span className={`inline-flex items-center px-2 py-1 rounded-lg text-xs font-bold ${getScoreColor(lead.aiScore)}`}>
+                          {lead.aiScore}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600">{lead.email}</p>
+                      <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
+                        <span>Goals: {lead.fitness_goals.slice(0, 2).join(', ')}</span>
+                        <span>Source: {lead.lead_source}</span>
+                        <span className="flex items-center">
+                          <Clock className="h-3 w-3 mr-1" />
+                          {new Date(lead.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                  <span className="text-sm text-gray-600">{item.count}</span>
                 </div>
               ))}
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Quick Actions */}
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {quickActions.map((action) => (
-            <button
-              key={action.title}
-              className="p-6 bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md hover:scale-105 transition-all text-left group"
-            >
-              <div className={`inline-flex p-3 rounded-lg ${action.color} mb-4 group-hover:scale-110 transition-transform`}>
-                <action.icon className="h-6 w-6 text-white" />
+          {/* Quick Stats */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+            <div className="p-6 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">Lead Quality</h3>
+            </div>
+            <div className="p-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-gray-700">Hot Leads (85+)</span>
+                  <span className="text-sm text-red-600 font-bold">{hotLeads}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-gray-700">Qualified (70+)</span>
+                  <span className="text-sm text-orange-600 font-bold">{qualifiedLeads}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-gray-700">New Leads</span>
+                  <span className="text-sm text-blue-600 font-bold">{newLeads}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-gray-700">Average Score</span>
+                  <span className="text-sm text-green-600 font-bold">{avgScore}</span>
+                </div>
               </div>
-              <h4 className="font-semibold text-gray-900 mb-1">{action.title}</h4>
-              <p className="text-sm text-gray-600">{action.description}</p>
-            </button>
-          ))}
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

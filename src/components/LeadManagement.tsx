@@ -4,25 +4,20 @@ import { useState, useEffect } from 'react';
 import {
   Users,
   Search,
-  Filter,
   Grid,
   List,
   Plus,
   Download,
   Upload,
-  Mail,
   Eye,
   Edit,
   Trash2,
   MessageCircle,
   Brain,
-  Target,
-  TrendingUp,
-  Award,
   X
 } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
-// Simplified lead type
 interface FitnessLead {
   id: string;
   name: string;
@@ -39,18 +34,15 @@ interface FitnessLead {
   created_at: string;
 }
 
-// Simple scoring function that actually works
 function calculateLeadScore(lead: FitnessLead): number {
   let score = 0;
   
-  // Age scoring (0-25 points)
   if (lead.age) {
     if (lead.age >= 25 && lead.age <= 45) score += 25;
     else if (lead.age >= 18 && lead.age <= 55) score += 20;
     else score += 15;
   } else score += 10;
 
-  // Activity level (0-20 points) - sedentary has highest potential
   switch (lead.current_activity_level) {
     case 'sedentary': score += 20; break;
     case 'lightly_active': score += 18; break;
@@ -59,23 +51,19 @@ function calculateLeadScore(lead: FitnessLead): number {
     case 'extremely_active': score += 10; break;
   }
 
-  // Experience (0-15 points)
   if (lead.previous_gym_experience) score += 10;
-  else score += 15; // New to gym = higher potential
+  else score += 15;
 
-  // Budget (0-20 points)
   if (lead.budget_range.includes('200+')) score += 20;
   else if (lead.budget_range.includes('150') || lead.budget_range.includes('100-200')) score += 15;
   else if (lead.budget_range.includes('100')) score += 12;
   else score += 8;
 
-  // Lead source (0-10 points)
   if (lead.lead_source.toLowerCase().includes('referral')) score += 10;
   else if (lead.lead_source.toLowerCase().includes('organic') || lead.lead_source.toLowerCase().includes('website')) score += 8;
   else if (lead.lead_source.toLowerCase().includes('google')) score += 7;
   else score += 5;
 
-  // Goals (0-10 points)
   if (lead.fitness_goals.length > 0) score += Math.min(lead.fitness_goals.length * 3, 10);
 
   return Math.min(score, 100);
@@ -89,14 +77,6 @@ function getScoreColor(score: number): string {
   return 'text-gray-600 bg-gray-50 border-gray-200';
 }
 
-function getScoreLabel(score: number): string {
-  if (score >= 85) return 'HOT';
-  if (score >= 70) return 'QUALIFIED';
-  if (score >= 50) return 'WARM';
-  if (score >= 30) return 'DEVELOPING';
-  return 'COLD';
-}
-
 function getScoreIcon(score: number): string {
   if (score >= 85) return '🔥';
   if (score >= 70) return '🎯';
@@ -105,123 +85,98 @@ function getScoreIcon(score: number): string {
   return '❄️';
 }
 
-// Mock leads with realistic data
-const mockLeads: FitnessLead[] = [
-  {
-    id: '1',
-    name: 'Sarah Johnson',
-    email: 'sarah.j@email.com',
-    phone: '+61 400 123 456',
-    location: 'Bondi, NSW',
-    age: 28,
-    fitness_goals: ['weight_loss', 'general_fitness'],
-    current_activity_level: 'sedentary',
-    previous_gym_experience: false,
-    budget_range: '$100-150/week',
-    lead_source: 'Google Search',
-    status: 'new',
-    created_at: '2024-01-15T08:00:00Z'
-  },
-  {
-    id: '2',
-    name: 'Mike Chen',
-    email: 'mike.chen@email.com',
-    phone: '+61 400 987 654',
-    location: 'Toorak, VIC',
-    age: 35,
-    fitness_goals: ['muscle_gain', 'strength'],
-    current_activity_level: 'lightly_active',
-    previous_gym_experience: true,
-    budget_range: '$200+/week',
-    lead_source: 'Referral',
-    status: 'contacted',
-    created_at: '2024-01-14T14:20:00Z'
-  },
-  {
-    id: '3',
-    name: 'Emma Wilson',
-    email: 'emma.w@email.com',
-    phone: '+61 400 555 789',
-    location: 'Brisbane, QLD',
-    age: 42,
-    fitness_goals: ['flexibility', 'stress_relief'],
-    current_activity_level: 'sedentary',
-    previous_gym_experience: false,
-    budget_range: '$80-120/week',
-    lead_source: 'Facebook Ad',
-    status: 'qualified',
-    created_at: '2024-01-13T16:45:00Z'
-  },
-  {
-    id: '4',
-    name: 'James Thompson',
-    email: 'james.t@email.com',
-    phone: '+61 400 333 222',
-    location: 'Perth, WA',
-    age: 29,
-    fitness_goals: ['weight_loss', 'cardio'],
-    current_activity_level: 'sedentary',
-    previous_gym_experience: false,
-    budget_range: '$150-200/week',
-    lead_source: 'Website',
-    status: 'new',
-    created_at: '2024-01-16T09:30:00Z'
-  },
-  {
-    id: '5',
-    name: 'Lisa Park',
-    email: 'lisa.park@email.com',
-    phone: '+61 400 777 888',
-    location: 'Adelaide, SA',
-    age: 38,
-    fitness_goals: ['general_fitness', 'strength'],
-    current_activity_level: 'moderately_active',
-    previous_gym_experience: true,
-    budget_range: '$200+/week',
-    lead_source: 'Referral',
-    status: 'qualified',
-    created_at: '2024-01-12T11:15:00Z'
-  }
-];
-
 export default function LeadManagement() {
-  const [leads] = useState<FitnessLead[]>(mockLeads);
-  const [filteredLeads, setFilteredLeads] = useState<FitnessLead[]>(mockLeads);
+  const [leads, setLeads] = useState<FitnessLead[]>([]);
+  const [filteredLeads, setFilteredLeads] = useState<FitnessLead[]>([]);
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
   const [searchTerm, setSearchTerm] = useState('');
   const [showInsights, setShowInsights] = useState(false);
   const [selectedLead, setSelectedLead] = useState<FitnessLead | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [showAddForm, setShowAddForm] = useState(false);
 
-  // Calculate enhanced leads with scores
-  const enhancedLeads = leads.map(lead => ({
+  useEffect(() => {
+    fetchLeads();
+  }, []);
+
+  const fetchLeads = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('fitness_leads')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setLeads(data || []);
+      setFilteredLeads(data || []);
+    } catch (error) {
+      console.error('Error fetching leads:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const addLead = async (leadData: Partial<FitnessLead>) => {
+    try {
+      const { data, error } = await supabase
+        .from('fitness_leads')
+        .insert([leadData as any])
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      const newLeads = [data, ...leads];
+      setLeads(newLeads);
+      setFilteredLeads(newLeads);
+      setShowAddForm(false);
+    } catch (error) {
+      console.error('Error adding lead:', error);
+    }
+  };
+
+  const deleteLead = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('fitness_leads')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      
+      const newLeads = leads.filter(lead => lead.id !== id);
+      setLeads(newLeads);
+      setFilteredLeads(newLeads);
+    } catch (error) {
+      console.error('Error deleting lead:', error);
+    }
+  };
+
+  const enhancedLeads = filteredLeads.map(lead => ({
     ...lead,
     aiScore: calculateLeadScore(lead)
   }));
 
-  // Filter leads based on search
   useEffect(() => {
-    let filtered = enhancedLeads;
+    let filtered = leads;
     
     if (searchTerm) {
-      filtered = enhancedLeads.filter(lead =>
+      filtered = leads.filter(lead =>
         lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
         lead.phone?.includes(searchTerm)
       );
     }
 
-    // Sort by AI score (highest first)
-    filtered.sort((a, b) => b.aiScore - a.aiScore);
-    
+    filtered.sort((a, b) => calculateLeadScore(b) - calculateLeadScore(a));
     setFilteredLeads(filtered);
-  }, [searchTerm]);
+  }, [searchTerm, leads]);
 
-  // Calculate dashboard stats
   const stats = {
     total: enhancedLeads.length,
     hot: enhancedLeads.filter(l => l.aiScore >= 85).length,
     qualified: enhancedLeads.filter(l => l.aiScore >= 70).length,
-    avgScore: Math.round(enhancedLeads.reduce((sum, l) => sum + l.aiScore, 0) / enhancedLeads.length),
+    avgScore: enhancedLeads.length > 0 ? Math.round(enhancedLeads.reduce((sum, l) => sum + l.aiScore, 0) / enhancedLeads.length) : 0,
     newLeads: enhancedLeads.filter(l => l.status === 'new').length
   };
 
@@ -264,7 +219,6 @@ export default function LeadManagement() {
       recommendations.push('Long-term nurture approach');
     }
 
-    // Specific insights based on data
     if (lead.current_activity_level === 'sedentary') {
       insights.push('💪 Sedentary lifestyle - huge transformation potential');
       recommendations.push('Emphasize beginner-friendly programs');
@@ -288,9 +242,27 @@ export default function LeadManagement() {
     return { insights, recommendations };
   };
 
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
+          <div className="bg-white rounded-xl p-6 border">
+            <div className="h-4 bg-gray-200 rounded w-full mb-4"></div>
+            <div className="space-y-3">
+              {[1,2,3].map(i => (
+                <div key={i} className="h-16 bg-gray-200 rounded"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      {/* Simple AI Dashboard */}
+      {/* AI Dashboard */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 text-white">
         <div className="flex items-center space-x-3 mb-4">
           <Brain className="h-6 w-6" />
@@ -324,19 +296,14 @@ export default function LeadManagement() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Smart Lead Management</h1>
-          <p className="mt-1 text-sm text-gray-500">AI-powered fitness lead scoring and insights</p>
+          <h1 className="text-3xl font-bold text-gray-900">Lead Management</h1>
+          <p className="mt-1 text-sm text-gray-500">AI-powered fitness lead scoring and management</p>
         </div>
         <div className="mt-4 sm:mt-0 flex items-center space-x-3">
-          <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">
-            <Upload className="h-4 w-4 mr-2" />
-            Import
-          </button>
-          <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">
-            <Download className="h-4 w-4 mr-2" />
-            Export
-          </button>
-          <button className="flex items-center px-4 py-2 text-sm font-medium text-white bg-[#00e0ff] rounded-lg hover:bg-[#00e0ff]/90">
+          <button 
+            onClick={() => setShowAddForm(true)}
+            className="flex items-center px-4 py-2 text-sm font-medium text-white bg-[#00e0ff] rounded-lg hover:bg-[#00e0ff]/90"
+          >
             <Plus className="h-4 w-4 mr-2" />
             Add Lead
           </button>
@@ -378,8 +345,23 @@ export default function LeadManagement() {
         </div>
       </div>
 
-      {/* Leads Table/Cards */}
-      {viewMode === 'table' ? (
+      {/* Leads Display */}
+      {enhancedLeads.length === 0 ? (
+        <div className="text-center py-12">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12">
+            <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No leads yet</h3>
+            <p className="text-gray-500 mb-6">Get started by adding your first fitness lead</p>
+            <button
+              onClick={() => setShowAddForm(true)}
+              className="inline-flex items-center px-6 py-3 text-sm font-medium text-white bg-[#00e0ff] rounded-lg hover:bg-[#00e0ff]/90"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Your First Lead
+            </button>
+          </div>
+        </div>
+      ) : viewMode === 'table' ? (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -394,10 +376,9 @@ export default function LeadManagement() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredLeads.map((lead) => {
-                  const score = calculateLeadScore(lead);
-                  const scoreColor = getScoreColor(score);
-                  const scoreIcon = getScoreIcon(score);
+                {enhancedLeads.map((lead) => {
+                  const scoreColor = getScoreColor(lead.aiScore);
+                  const scoreIcon = getScoreIcon(lead.aiScore);
                   
                   return (
                     <tr key={lead.id} className="hover:bg-gray-50">
@@ -429,7 +410,7 @@ export default function LeadManagement() {
                         <div className="flex items-center space-x-2">
                           <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${scoreColor}`}>
                             <span className="mr-1">{scoreIcon}</span>
-                            {score}
+                            {lead.aiScore}
                           </div>
                           <button
                             onClick={() => showLeadInsights(lead)}
@@ -456,8 +437,11 @@ export default function LeadManagement() {
                           <button className="text-gray-400 hover:text-gray-600">
                             <Edit className="h-4 w-4" />
                           </button>
-                          <button className="text-gray-400 hover:text-green-600">
-                            <MessageCircle className="h-4 w-4" />
+                          <button 
+                            onClick={() => deleteLead(lead.id)}
+                            className="text-gray-400 hover:text-red-600"
+                          >
+                            <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
                       </td>
@@ -469,12 +453,10 @@ export default function LeadManagement() {
           </div>
         </div>
       ) : (
-        // Card View
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredLeads.map((lead) => {
-            const score = calculateLeadScore(lead);
-            const scoreColor = getScoreColor(score);
-            const scoreIcon = getScoreIcon(score);
+          {enhancedLeads.map((lead) => {
+            const scoreColor = getScoreColor(lead.aiScore);
+            const scoreIcon = getScoreIcon(lead.aiScore);
             
             return (
               <div key={lead.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
@@ -497,7 +479,7 @@ export default function LeadManagement() {
                     <div className="flex items-center space-x-2">
                       <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${scoreColor}`}>
                         <span className="mr-1">{scoreIcon}</span>
-                        {score}
+                        {lead.aiScore}
                       </span>
                       <button
                         onClick={() => showLeadInsights(lead)}
@@ -535,8 +517,11 @@ export default function LeadManagement() {
                       <button className="text-gray-400 hover:text-gray-600">
                         <Edit className="h-4 w-4" />
                       </button>
-                      <button className="text-gray-400 hover:text-green-600">
-                        <MessageCircle className="h-4 w-4" />
+                      <button 
+                        onClick={() => deleteLead(lead.id)}
+                        className="text-gray-400 hover:text-red-600"
+                      >
+                        <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
                   </div>
@@ -575,7 +560,6 @@ export default function LeadManagement() {
               const { insights, recommendations } = getInsights(selectedLead);
               return (
                 <div className="space-y-6">
-                  {/* Insights */}
                   <div>
                     <h4 className="text-lg font-semibold text-gray-900 mb-3">AI Insights</h4>
                     <div className="space-y-2">
@@ -587,7 +571,6 @@ export default function LeadManagement() {
                     </div>
                   </div>
 
-                  {/* Recommendations */}
                   <div>
                     <h4 className="text-lg font-semibold text-gray-900 mb-3">Recommendations</h4>
                     <div className="space-y-2">
@@ -606,9 +589,6 @@ export default function LeadManagement() {
                     >
                       Close
                     </button>
-                    <button className="px-4 py-2 text-sm font-medium text-white bg-[#00e0ff] rounded-lg hover:bg-[#00e0ff]/90">
-                      Take Action
-                    </button>
                   </div>
                 </div>
               );
@@ -616,6 +596,202 @@ export default function LeadManagement() {
           </div>
         </div>
       )}
+
+      {/* Add Lead Form Modal */}
+      {showAddForm && (
+        <AddLeadForm
+          onClose={() => setShowAddForm(false)}
+          onAdd={addLead}
+        />
+      )}
+    </div>
+  );
+}
+
+// Add Lead Form Component
+function AddLeadForm({ onClose, onAdd }: { onClose: () => void; onAdd: (lead: Partial<FitnessLead>) => void }) {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    location: '',
+    age: '',
+    fitness_goals: [] as string[],
+    current_activity_level: 'sedentary',
+    previous_gym_experience: false,
+    budget_range: '',
+    lead_source: '',
+    status: 'new'
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onAdd({
+      ...formData,
+      age: formData.age ? parseInt(formData.age) : null,
+    });
+  };
+
+  const toggleGoal = (goal: string) => {
+    setFormData(prev => ({
+      ...prev,
+      fitness_goals: prev.fitness_goals.includes(goal)
+        ? prev.fitness_goals.filter(g => g !== goal)
+        : [...prev.fitness_goals, goal]
+    }));
+  };
+
+  const goals = ['weight_loss', 'muscle_gain', 'general_fitness', 'strength', 'flexibility', 'cardio'];
+  const budgets = ['$50-100/week', '$100-150/week', '$150-200/week', '$200+/week'];
+  const sources = ['Website', 'Google Search', 'Facebook Ad', 'Instagram', 'Referral', 'Walk-in'];
+
+  return (
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+      <div className="relative top-20 mx-auto p-5 border max-w-2xl shadow-lg rounded-lg bg-white">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-xl font-semibold text-gray-900">Add New Lead</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <X className="h-6 w-6" />
+          </button>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input
+              type="text"
+              placeholder="Full Name *"
+              required
+              value={formData.name}
+              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#00e0ff]/20 focus:border-[#00e0ff]"
+            />
+            <input
+              type="email"
+              placeholder="Email *"
+              required
+              value={formData.email}
+              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#00e0ff]/20 focus:border-[#00e0ff]"
+            />
+            <input
+              type="tel"
+              placeholder="Phone"
+              value={formData.phone}
+              onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#00e0ff]/20 focus:border-[#00e0ff]"
+            />
+            <input
+              type="number"
+              placeholder="Age"
+              value={formData.age}
+              onChange={(e) => setFormData(prev => ({ ...prev, age: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#00e0ff]/20 focus:border-[#00e0ff]"
+            />
+          </div>
+
+          <input
+            type="text"
+            placeholder="Location"
+            value={formData.location}
+            onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#00e0ff]/20 focus:border-[#00e0ff]"
+          />
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Fitness Goals</label>
+            <div className="flex flex-wrap gap-2">
+              {goals.map(goal => (
+                <button
+                  key={goal}
+                  type="button"
+                  onClick={() => toggleGoal(goal)}
+                  className={`px-3 py-1 rounded-full text-sm ${
+                    formData.fitness_goals.includes(goal)
+                      ? 'bg-[#00e0ff] text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {goal.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Activity Level</label>
+              <select
+                value={formData.current_activity_level}
+                onChange={(e) => setFormData(prev => ({ ...prev, current_activity_level: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#00e0ff]/20 focus:border-[#00e0ff]"
+              >
+                <option value="sedentary">Sedentary</option>
+                <option value="lightly_active">Lightly Active</option>
+                <option value="moderately_active">Moderately Active</option>
+                <option value="very_active">Very Active</option>
+                <option value="extremely_active">Extremely Active</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Budget Range</label>
+              <select
+                value={formData.budget_range}
+                onChange={(e) => setFormData(prev => ({ ...prev, budget_range: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#00e0ff]/20 focus:border-[#00e0ff]"
+              >
+                <option value="">Select Budget</option>
+                {budgets.map(budget => (
+                  <option key={budget} value={budget}>{budget}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Lead Source</label>
+            <select
+              value={formData.lead_source}
+              onChange={(e) => setFormData(prev => ({ ...prev, lead_source: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#00e0ff]/20 focus:border-[#00e0ff]"
+            >
+              <option value="">Select Source</option>
+              {sources.map(source => (
+                <option key={source} value={source}>{source}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="experience"
+              checked={formData.previous_gym_experience}
+              onChange={(e) => setFormData(prev => ({ ...prev, previous_gym_experience: e.target.checked }))}
+              className="h-4 w-4 text-[#00e0ff] focus:ring-[#00e0ff] border-gray-300 rounded"
+            />
+            <label htmlFor="experience" className="ml-2 text-sm text-gray-700">
+              Has previous gym experience
+            </label>
+          </div>
+
+          <div className="flex justify-end space-x-3 pt-4 border-t">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 text-sm font-medium text-white bg-[#00e0ff] rounded-lg hover:bg-[#00e0ff]/90"
+            >
+              Add Lead
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
