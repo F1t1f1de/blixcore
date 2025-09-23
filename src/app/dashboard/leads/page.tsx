@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getAuthToken } from '@/lib/auth';
 import DashboardLayout from '@/components/DashboardLayout';
+import LeadManagement from '@/components/LeadManagement';
 
 export default function LeadsPage() {
   const router = useRouter();
@@ -18,12 +19,7 @@ export default function LeadsPage() {
 
   return (
     <DashboardLayout>
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">Lead Management</h1>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
-          <p className="text-gray-600">Lead management interface coming soon...</p>
-        </div>
-      </div>
+      <LeadManagement />
     </DashboardLayout>
   );
 }
