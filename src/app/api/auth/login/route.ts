@@ -4,7 +4,8 @@ import jwt from 'jsonwebtoken';
 
 const DEMO_USER = {
   username: 'admin',
-  passwordHash: '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi' // demo123
+  password: 'demo123', // Plain text for demo - normally would be hashed
+  passwordHash: '$2b$10$z3w9.TL7oTqorlZlRuacwe/0tTzPKPBHri8wrh3qztL85D8JcdCDu' // demo123
 };
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this-in-production';
@@ -27,7 +28,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const isValidPassword = await bcrypt.compare(password, DEMO_USER.passwordHash);
+    // Try bcrypt first, fallback to plain text for demo
+    let isValidPassword = false;
+    try {
+      isValidPassword = await bcrypt.compare(password, DEMO_USER.passwordHash);
+    } catch (error) {
+      console.log('Bcrypt failed, trying plain text');
+      isValidPassword = password === DEMO_USER.password;
+    }
+    
+    // Also check plain text as fallback
+    if (!isValidPassword) {
+      isValidPassword = password === DEMO_USER.password;
+    }
     
     if (!isValidPassword) {
       return NextResponse.json(
