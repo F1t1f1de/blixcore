@@ -118,9 +118,11 @@ export default function LeadManagement() {
 
   const addLead = async (leadData: Partial<FitnessLead>) => {
     try {
-      const { data, error } = await supabase
+      // Type assertion to bypass Supabase typing issues
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any)
         .from('fitness_leads')
-        .insert([leadData as any])
+        .insert([leadData])
         .select()
         .single();
 
@@ -628,7 +630,8 @@ function AddLeadForm({ onClose, onAdd }: { onClose: () => void; onAdd: (lead: Pa
     e.preventDefault();
     onAdd({
       ...formData,
-      age: formData.age ? parseInt(formData.age) : null,
+      age: formData.age ? parseInt(formData.age) : undefined,
+      current_activity_level: formData.current_activity_level as FitnessLead['current_activity_level'],
     });
   };
 
