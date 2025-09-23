@@ -19,8 +19,15 @@ import {
   MessageCircle,
   Clock,
   Award,
-  X
+  X,
+  Brain,
+  Zap,
+  TrendingUp,
+  Target
 } from 'lucide-react';
+import { calculateLeadScore, getScoreColor, getScoreLabel, getScoreIcon, type LeadScoringData } from '@/lib/leadScoring';
+import LeadInsights from './LeadInsights';
+import AILeadDashboard from './AILeadDashboard';
 
 // Types for fitness leads
 interface FitnessLead {
@@ -177,6 +184,9 @@ export default function LeadManagement() {
 
   // Import/Export state
   const [showImportModal, setShowImportModal] = useState(false);
+  const [showAIInsights, setShowAIInsights] = useState(false);
+  const [selectedLeadForInsights, setSelectedLeadForInsights] = useState<FitnessLead | null>(null);
+  const [showAIDashboard, setShowAIDashboard] = useState(true);
 
   // CSV Export function
   const handleExport = () => {
@@ -232,6 +242,57 @@ export default function LeadManagement() {
     };
     reader.readAsText(file);
     setShowImportModal(false);
+  };
+
+  // Convert lead to scoring data
+  const convertLeadToScoringData = (lead: FitnessLead): LeadScoringData => {
+    return {
+      age: lead.age,
+      location: lead.location,
+      gender: lead.gender,
+      currentActivityLevel: lead.current_activity_level,
+      fitnessGoals: lead.fitness_goals,
+      previousGymExperience: lead.previous_gym_experience,
+      healthConditions: lead.health_conditions,
+      budgetRange: lead.budget_range,
+      leadSource: lead.lead_source,
+      createdAt: new Date(lead.created_at),
+      // Mock engagement data - in real app this would come from tracking
+      emailOpens: Math.floor(Math.random() * 10),
+      emailClicks: Math.floor(Math.random() * 5),
+      websiteVisits: Math.floor(Math.random() * 8),
+      timeOnSite: Math.floor(Math.random() * 15),
+      pricingPageViews: Math.floor(Math.random() * 3),
+      businessType: 'personal_trainer' // This would come from user's business type
+    };
+  };
+
+  // Handle AI recommendation actions
+  const handleRecommendationAction = (action: string, leadId?: string) => {
+    console.log('Executing AI recommendation:', action, leadId);
+    // Implement specific actions based on AI recommendations
+    switch (action) {
+      case 'contact_immediately':
+        alert('Opening contact interface for immediate outreach...');
+        break;
+      case 'send_personalized_email':
+        alert('Opening personalized email template...');
+        break;
+      case 'add_to_nurture':
+        alert('Adding lead to nurture campaign...');
+        break;
+      case 'schedule_demo':
+        alert('Opening demo scheduling interface...');
+        break;
+      default:
+        alert(`Executing: ${action}`);
+    }
+  };
+
+  // Show AI insights for a lead
+  const showLeadInsights = (lead: FitnessLead) => {
+    setSelectedLeadForInsights(lead);
+    setShowAIInsights(true);
   };
 
   // Apply filters and sorting
@@ -372,6 +433,47 @@ export default function LeadManagement() {
           </button>
         </div>
       </div>
+
+      {/* AI Dashboard */}
+      {showAIDashboard && (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-1">
+          <div className="flex items-center justify-between p-5 pb-0">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg">
+                <Brain className="h-5 w-5 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">AI Lead Intelligence</h3>
+            </div>
+            <button
+              onClick={() => setShowAIDashboard(!showAIDashboard)}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+          <div className="p-5 pt-2">
+            <AILeadDashboard 
+              leads={leads} 
+              onLeadClick={(leadId) => {
+                const lead = leads.find(l => l.id === leadId);
+                if (lead) showLeadInsights(lead);
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {!showAIDashboard && (
+        <button
+          onClick={() => setShowAIDashboard(true)}
+          className="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg p-4 hover:from-purple-600 hover:to-blue-600 transition-all"
+        >
+          <div className="flex items-center justify-center space-x-3">
+            <Brain className="h-5 w-5" />
+            <span className="font-medium">Show AI Lead Intelligence Dashboard</span>
+          </div>
+        </button>
+      )}
 
       {/* Search and Controls */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -615,10 +717,27 @@ export default function LeadManagement() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getScoreColor(lead.score)}`}>
-                        <Award className="h-3 w-3 mr-1" />
-                        {lead.score}
-                      </div>
+                      {(() => {
+                        const scoringData = convertLeadToScoringData(lead);
+                        const aiScore = calculateLeadScore(scoringData);
+                        const scoreColor = getScoreColor(aiScore.totalScore);
+                        const scoreIcon = getScoreIcon(aiScore.totalScore);
+                        return (
+                          <div className="flex items-center space-x-2">
+                            <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${scoreColor}`}>
+                              <span className="mr-1">{scoreIcon}</span>
+                              {aiScore.totalScore}
+                            </div>
+                            <button
+                              onClick={() => showLeadInsights(lead)}
+                              className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                              title="View AI Insights"
+                            >
+                              <Brain className="h-4 w-4" />
+                            </button>
+                          </div>
+                        );
+                      })()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(lead.status)}`}>
@@ -678,10 +797,27 @@ export default function LeadManagement() {
 
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getScoreColor(lead.score)}`}>
-                    <Award className="h-3 w-3 mr-1" />
-                    Score: {lead.score}
-                  </span>
+                  {(() => {
+                    const scoringData = convertLeadToScoringData(lead);
+                    const aiScore = calculateLeadScore(scoringData);
+                    const scoreColor = getScoreColor(aiScore.totalScore);
+                    const scoreIcon = getScoreIcon(aiScore.totalScore);
+                    return (
+                      <div className="flex items-center space-x-2">
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${scoreColor}`}>
+                          <span className="mr-1">{scoreIcon}</span>
+                          {aiScore.totalScore}
+                        </span>
+                        <button
+                          onClick={() => showLeadInsights(lead)}
+                          className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                          title="AI Insights"
+                        >
+                          <Brain className="h-3 w-3" />
+                        </button>
+                      </div>
+                    );
+                  })()}
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(lead.status)}`}>
                     {lead.status}
                   </span>
@@ -747,6 +883,62 @@ export default function LeadManagement() {
             <Plus className="h-4 w-4 mr-2" />
             Add Your First Lead
           </button>
+        </div>
+      )}
+
+      {/* AI Insights Modal */}
+      {showAIInsights && selectedLeadForInsights && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border max-w-4xl shadow-lg rounded-lg bg-white">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-3">
+                <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
+                  <Brain className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900">
+                    AI Insights for {selectedLeadForInsights.name}
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Intelligent analysis powered by fitness industry AI
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowAIInsights(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            
+            <div className="max-h-[70vh] overflow-y-auto">
+              <LeadInsights 
+                leadData={convertLeadToScoringData(selectedLeadForInsights)}
+                onRecommendationAction={(action) => {
+                  handleRecommendationAction(action, selectedLeadForInsights.id);
+                }}
+              />
+            </div>
+            
+            <div className="mt-6 flex justify-end space-x-3">
+              <button 
+                onClick={() => setShowAIInsights(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Close
+              </button>
+              <button 
+                onClick={() => {
+                  handleRecommendationAction('contact_immediately', selectedLeadForInsights.id);
+                  setShowAIInsights(false);
+                }}
+                className="px-4 py-2 text-sm font-medium text-white bg-[#00e0ff] rounded-lg hover:bg-[#00e0ff]/90"
+              >
+                Take Action
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

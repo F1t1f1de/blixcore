@@ -213,7 +213,7 @@ CREATE OR REPLACE FUNCTION calculate_lead_score(lead_id UUID)
 RETURNS INTEGER AS $$
 DECLARE
     lead_record RECORD;
-    score INTEGER := 0;
+    calculated_score INTEGER := 0;
     activity_count INTEGER := 0;
 BEGIN
     -- Get lead data
@@ -227,39 +227,39 @@ BEGIN
     IF lead_record.age IS NOT NULL THEN
         -- Prime fitness age range 25-45 gets higher scores
         IF lead_record.age BETWEEN 25 AND 45 THEN
-            score := score + 15;
+            calculated_score := calculated_score + 15;
         ELSIF lead_record.age BETWEEN 18 AND 55 THEN
-            score := score + 10;
+            calculated_score := calculated_score + 10;
         ELSE
-            score := score + 5;
+            calculated_score := calculated_score + 5;
         END IF;
     END IF;
     
     IF lead_record.location IS NOT NULL THEN
-        score := score + 5; -- Location provided
+        calculated_score := calculated_score + 5; -- Location provided
     END IF;
     
     IF lead_record.phone IS NOT NULL THEN
-        score := score + 5; -- Phone number provided
+        calculated_score := calculated_score + 5; -- Phone number provided
     END IF;
     
     -- Fitness interest signals (30 points max)
     IF lead_record.previous_gym_experience = true THEN
-        score := score + 10; -- Previous gym experience is valuable
+        calculated_score := calculated_score + 10; -- Previous gym experience is valuable
     END IF;
     
     IF lead_record.current_activity_level IS NOT NULL THEN
         CASE lead_record.current_activity_level
-            WHEN 'sedentary' THEN score := score + 15; -- High potential for improvement
-            WHEN 'lightly_active' THEN score := score + 12;
-            WHEN 'moderately_active' THEN score := score + 8;
-            WHEN 'very_active' THEN score := score + 5;
-            WHEN 'extremely_active' THEN score := score + 3;
+            WHEN 'sedentary' THEN calculated_score := calculated_score + 15; -- High potential for improvement
+            WHEN 'lightly_active' THEN calculated_score := calculated_score + 12;
+            WHEN 'moderately_active' THEN calculated_score := calculated_score + 8;
+            WHEN 'very_active' THEN calculated_score := calculated_score + 5;
+            WHEN 'extremely_active' THEN calculated_score := calculated_score + 3;
         END CASE;
     END IF;
     
     IF array_length(lead_record.fitness_goals, 1) > 0 THEN
-        score := score + 5; -- Has specific fitness goals
+        calculated_score := calculated_score + 5; -- Has specific fitness goals
     END IF;
     
     -- Engagement level (25 points max)
@@ -269,37 +269,37 @@ BEGIN
     
     -- Score based on engagement activities
     IF activity_count > 10 THEN
-        score := score + 25;
+        calculated_score := calculated_score + 25;
     ELSIF activity_count > 5 THEN
-        score := score + 20;
+        calculated_score := calculated_score + 20;
     ELSIF activity_count > 2 THEN
-        score := score + 15;
+        calculated_score := calculated_score + 15;
     ELSIF activity_count > 0 THEN
-        score := score + 10;
+        calculated_score := calculated_score + 10;
     END IF;
     
     -- Purchase intent (20 points max)
     IF lead_record.budget_range IS NOT NULL THEN
-        score := score + 10; -- Budget consideration shows intent
+        calculated_score := calculated_score + 10; -- Budget consideration shows intent
     END IF;
     
     IF lead_record.preferred_contact_method IS NOT NULL THEN
-        score := score + 5; -- Contact preference shows readiness
+        calculated_score := calculated_score + 5; -- Contact preference shows readiness
     END IF;
     
     IF array_length(lead_record.preferred_workout_times, 1) > 0 THEN
-        score := score + 5; -- Specific timing shows commitment
+        calculated_score := calculated_score + 5; -- Specific timing shows commitment
     END IF;
     
     -- Ensure score doesn't exceed 100
-    IF score > 100 THEN
-        score := 100;
+    IF calculated_score > 100 THEN
+        calculated_score := 100;
     END IF;
     
     -- Update the lead with calculated score
-    UPDATE leads SET score = score, updated_at = NOW() WHERE id = lead_id;
+    UPDATE leads SET score = calculated_score, updated_at = NOW() WHERE id = lead_id;
     
-    RETURN score;
+    RETURN calculated_score;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
