@@ -41,14 +41,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* Top Navigation */}
       <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center h-20">
             {/* Logo */}
             <div className="flex items-center">
               <Link href="/dashboard" className="flex items-center">
                 <img 
                   src="/blixcore-logo.png" 
                   alt="BlixCore" 
-                  className="h-12 w-auto opacity-90 hover:opacity-100 transition-opacity"
+                  className="h-24 w-auto opacity-90 hover:opacity-100 transition-opacity"
                 />
               </Link>
             </div>
