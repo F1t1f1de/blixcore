@@ -48,7 +48,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 <img 
                   src="/blixcore-logo.png" 
                   alt="BlixCore" 
-                  className="h-8 w-auto opacity-90 hover:opacity-100 transition-opacity"
+                  className="h-12 w-auto opacity-90 hover:opacity-100 transition-opacity"
                 />
               </Link>
             </div>
