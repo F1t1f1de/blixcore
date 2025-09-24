@@ -210,6 +210,49 @@ export default function LeadManagement() {
     setShowInsights(true);
   };
 
+  const exportToCSV = () => {
+    const csvData = enhancedLeads.map(lead => ({
+      Name: lead.name,
+      Email: lead.email,
+      Phone: lead.phone || '',
+      Location: lead.location || '',
+      Age: lead.age || '',
+      'Fitness Goals': lead.fitness_goals.join(', '),
+      'Activity Level': lead.current_activity_level.replace('_', ' '),
+      'Gym Experience': lead.previous_gym_experience ? 'Yes' : 'No',
+      'Budget Range': lead.budget_range,
+      'Lead Source': lead.lead_source,
+      Status: lead.status,
+      'AI Score': lead.aiScore,
+      'Created Date': new Date(lead.created_at).toLocaleDateString()
+    }));
+
+    const headers = Object.keys(csvData[0] || {});
+    const csvContent = [
+      headers.join(','),
+      ...csvData.map(row => 
+        headers.map(header => {
+          const value = row[header as keyof typeof row];
+          return typeof value === 'string' && value.includes(',') 
+            ? `"${value}"` 
+            : value;
+        }).join(',')
+      )
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `fitness_leads_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
   const getInsights = (lead: FitnessLead) => {
     const score = calculateLeadScore(lead);
     const insights = [];
@@ -314,6 +357,17 @@ export default function LeadManagement() {
           <p className="mt-1 text-sm text-gray-500">AI-powered fitness lead scoring and management</p>
         </div>
         <div className="mt-4 sm:mt-0 flex items-center space-x-3">
+          <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">
+            <Upload className="h-4 w-4 mr-2" />
+            Import CSV
+          </button>
+          <button 
+            onClick={exportToCSV}
+            className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Export CSV
+          </button>
           <button 
             onClick={() => setShowAddForm(true)}
             className="flex items-center px-4 py-2 text-sm font-medium text-white bg-[#00e0ff] rounded-lg hover:bg-[#00e0ff]/90"

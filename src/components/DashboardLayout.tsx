@@ -12,8 +12,7 @@ import {
   X,
   ChevronDown,
   LogOut,
-  User,
-  Dumbbell
+  User
 } from 'lucide-react';
 
 interface DashboardLayoutProps {
@@ -45,9 +44,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="flex items-center">
-              <Link href="/dashboard" className="flex items-center space-x-2">
-                <Dumbbell className="h-8 w-8 text-[#00e0ff]" />
-                <span className="text-xl font-bold text-gray-900">BlixCore</span>
+              <Link href="/dashboard" className="flex items-center">
+                <img 
+                  src="/blixcore-logo.png" 
+                  alt="BlixCore" 
+                  className="h-8 w-auto opacity-90 hover:opacity-100 transition-opacity"
+                />
               </Link>
             </div>
 
