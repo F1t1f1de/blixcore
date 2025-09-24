@@ -48,7 +48,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 <img 
                   src="/blixcore-logo.png" 
                   alt="BlixCore" 
-                  className="h-48 w-auto opacity-90 hover:opacity-100 transition-opacity mix-blend-multiply"
+                  className="h-48 w-auto opacity-90 hover:opacity-100 transition-opacity"
+                  style={{
+                    background: 'transparent',
+                    mixBlendMode: 'screen',
+                    filter: 'contrast(1.2) brightness(1.1)'
+                  }}
                 />
               </Link>
             </div>

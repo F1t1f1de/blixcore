@@ -59,7 +59,16 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-8">
             <div className="flex items-center space-x-3">
-              <img src="/blixcore-logo.png" alt="BlixCore" className="h-56 w-auto opacity-90 hover:opacity-100 transition-opacity mix-blend-multiply" />
+              <img 
+                src="/blixcore-logo.png" 
+                alt="BlixCore" 
+                className="h-56 w-auto opacity-90 hover:opacity-100 transition-opacity"
+                style={{
+                  background: 'transparent',
+                  mixBlendMode: 'screen',
+                  filter: 'contrast(1.2) brightness(1.1)'
+                }}
+              />
             </div>
             <nav className="hidden md:flex space-x-8">
               <Link href="#features" className="text-gray-600 hover:text-[#00e0ff]">Features</Link>
@@ -325,7 +334,16 @@ export default function Home() {
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="mb-6">
-                <img src="/blixcore-logo.png" alt="BlixCore" className="h-80 w-auto opacity-90 mix-blend-multiply" />
+                <img 
+                  src="/blixcore-logo.png" 
+                  alt="BlixCore" 
+                  className="h-80 w-auto opacity-90"
+                  style={{
+                    background: 'transparent',
+                    mixBlendMode: 'screen',
+                    filter: 'contrast(1.2) brightness(1.1)'
+                  }}
+                />
               </div>
               <p className="text-gray-400 mb-4">The lead generation platform built specifically for Australian fitness businesses.</p>
               <p className="text-sm text-gray-500">🇦🇺 Proudly Australian-owned</p>
